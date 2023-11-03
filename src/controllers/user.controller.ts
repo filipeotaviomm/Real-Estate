@@ -6,6 +6,7 @@ import {
   updateUserService,
 } from "../services/user.service";
 import { TUserRead, TUsersRead } from "../interfaces/users.interface";
+import { TAllUsers } from "../interfaces/pagination.interface";
 
 export const createUserController = async (
   req: Request,
@@ -20,7 +21,7 @@ export const getAllUsersController = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const users: TUsersRead = await getAllUsersService();
+  const users: TAllUsers = await getAllUsersService(res.locals.pagination);
 
   return res.status(200).json(users);
 };

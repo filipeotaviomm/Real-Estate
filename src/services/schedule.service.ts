@@ -13,6 +13,7 @@ export const createScheduleService = async (
     id: realEstateId,
   });
 
+  // const time = Number(hour.split(":")[0]); pode usar essa linha sem os parsesInts da linha de baixo, ou a linha de baixo como está.
   if (parseInt(hour) < 8 || parseInt(hour) >= 18) {
     throw new AppError("Invalid hour, available times are 8AM to 18PM", 400);
   }
@@ -20,6 +21,7 @@ export const createScheduleService = async (
   const newDate = new Date(date).getDay();
 
   if (newDate < 1 || newDate > 5) {
+    //0 = domingo - 5 = sábado
     throw new AppError("Invalid date, work days are monday to friday", 400);
   }
 

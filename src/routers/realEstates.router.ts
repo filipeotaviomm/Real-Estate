@@ -10,6 +10,7 @@ import {
   createRealEstateController,
   readAllRealEstateController,
 } from "../controllers/realEstate.controller";
+import { pagination } from "../middlewares/pagination.middleware";
 
 export const realEstatesRouter = Router();
 
@@ -21,4 +22,8 @@ realEstatesRouter.post(
   isAddressUnique,
   createRealEstateController
 );
-realEstatesRouter.get("/", readAllRealEstateController);
+realEstatesRouter.get(
+  "/",
+  pagination("/realEstate"),
+  readAllRealEstateController
+);

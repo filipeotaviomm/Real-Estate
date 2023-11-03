@@ -3,6 +3,7 @@ import {
   createRealEstateService,
   readAllRealEstateService,
 } from "../services/realEstate.service";
+import { TAllRealEstates } from "../interfaces/pagination.interface";
 
 export const createRealEstateController = async (
   req: Request,
@@ -17,7 +18,9 @@ export const readAllRealEstateController = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const realEstates = await readAllRealEstateService();
+  const realEstates: TAllRealEstates = await readAllRealEstateService(
+    res.locals.pagination
+  );
 
   return res.status(200).json(realEstates);
 };

@@ -27,6 +27,11 @@ export const readRealEstatesbyCategoryService = async (
     relations: {
       realEstate: true,
     },
+    // relations: {
+    //   realEstate: {
+    //     address: true,
+    //   },
+    // },
   });
 
   if (!category) {

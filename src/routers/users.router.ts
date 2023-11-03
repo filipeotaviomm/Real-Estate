@@ -13,6 +13,7 @@ import {
   getAllUsersController,
   updateUserController,
 } from "../controllers/user.controller";
+import { pagination } from "../middlewares/pagination.middleware";
 
 export const usersRouter = Router();
 
@@ -22,7 +23,13 @@ usersRouter.post(
   isEmailUnique,
   createUserController
 );
-usersRouter.get("/", isUserLogged, isUserAdmin, getAllUsersController);
+usersRouter.get(
+  "/",
+  isUserLogged,
+  isUserAdmin,
+  pagination("/users"),
+  getAllUsersController
+);
 
 usersRouter.patch(
   "/:userId",
