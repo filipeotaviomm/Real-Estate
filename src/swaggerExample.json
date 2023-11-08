@@ -1,0 +1,96 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "K Imoveis",
+    "description": "API para gerenciamento de uma Imobiliária",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development env"
+    },
+    {
+      "url": "https://onrender-clientes-api.com",
+      "description": "Production env"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "description": "Rota responsável por logar um usuário ao sistema",
+        "tags": ["Rotas sem autenticação"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/login" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/loginResponse"
+                },
+                "examples": {
+                  "loginResponse": {
+                    "value": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im90YXZpb0BtYWlsLmNvbSIsImFkbWluIjpmYWxzZSwiaWF0IjoxNjk5MzgwNzAyLCJleHAiOjE2OTk0NjcxMDIsInN1YiI6IjUifQ.uKWk2OXiU9_EGq2F3ZacbxsW4GWbadVJ2Zqyr7M9B_Q"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - E-mail ou senha invalidos",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LoginResponse": {
+                    "value": {
+                      "message": "Invalid credentials"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{}]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "loginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}
