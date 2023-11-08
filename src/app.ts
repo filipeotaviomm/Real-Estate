@@ -8,6 +8,8 @@ import { categoriesRouter } from "./routers/categories.router";
 import { realEstatesRouter } from "./routers/realEstates.router";
 import { schedulesRouter } from "./routers/schedules.router";
 import cors from "cors";
+import swaggerUiExpress from "swagger-ui-express";
+import swaggerDocument from "./swagger.json";
 
 const app: Application = express();
 
@@ -21,6 +23,11 @@ app.use(cors());
 
 app.use(express.json());
 
+app.use(
+  "/api-documentation",
+  swaggerUiExpress.serve,
+  swaggerUiExpress.setup(swaggerDocument)
+);
 app.use("/users", usersRouter);
 app.use("/login", sessionRouter);
 app.use("/categories", categoriesRouter);

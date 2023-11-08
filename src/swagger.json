@@ -1,0 +1,1488 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "K Imoveis",
+    "description": "API para gerenciamento de uma Imobiliária",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development env"
+    },
+    {
+      "url": "https://onrender-clientes-api.com",
+      "description": "Production env"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "post": {
+        "description": "Rota responsável por cadastrar usuários.",
+        "tags": ["Rotas sem autenticação"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/userResponse"
+                },
+                "examples": {
+                  "user": {
+                    "value": {
+                      "id": 1,
+                      "name": "Filipe",
+                      "email": "filipe@mail.com",
+                      "admin": true,
+                      "createdAt": "2023-10-28",
+                      "updatedAt": "2023-10-29",
+                      "deletedAt": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Cada campo deve respeitar o seu tipo de acordo com o seu schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": {
+                        "name": ["Expected string, received number"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Não podem ser cadastrados dois usuários com o mesmo e-mail",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "conflictError": {
+                    "value": {
+                      "message": "Email already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{}]
+      },
+      "get": {
+        "description": "Rota responsável por buscar todos os usuários cadastrados.<br><br>É possível ordenar os usúarios pelo id, nome ou email, de forma ascendente ou descendente.<br><br>Exemplo: http://localhost:3000/users?page=1&perPage=5&sort=name&order=asc",
+        "tags": ["Rotas exclusivas de usuários admin"],
+        "responses": {
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "prevPage": null,
+                      "nextPage": "http://localhost:3000/users?page=1&perPage=5",
+                      "data": [
+                        {
+                          "id": 1,
+                          "name": "Filipe",
+                          "email": "filipe@mail.com",
+                          "admin": true,
+                          "createdAt": "2023-10-28",
+                          "updatedAt": "2023-10-31",
+                          "deletedAt": null
+                        },
+                        {
+                          "id": 2,
+                          "name": "Nathalia",
+                          "email": "nathalia@mail.com",
+                          "admin": false,
+                          "createdAt": "2023-10-27",
+                          "updatedAt": "2023-10-31",
+                          "deletedAt": null
+                        }
+                      ],
+                      "count": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - A rota pode ser acessada apenas por usuários administradores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "Insufficient permission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/:userId": {
+      "patch": {
+        "description": "Rota responsável por atualizar as informações do usuário logado",
+        "tags": ["Rotas com autenticação"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/updateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "user": {
+                    "value": {
+                      "id": 4,
+                      "name": "Filipe",
+                      "email": "filipe@mail.com",
+                      "admin": true,
+                      "createdAt": "2023-10-28",
+                      "updatedAt": "2023-11-07",
+                      "deletedAt": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Cada campo deve respeitar o seu tipo de acordo com o seu schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": {
+                        "name": ["Expected string, received number"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Não é possível atualizar os dados de outros usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "Insufficient permission"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Não podem ser cadastrados dois usuários com o mesmo e-mail",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "conflictError": {
+                    "value": {
+                      "message": "Email already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Rota responsável por fazer um soft delete no usuário",
+        "tags": ["Rotas exclusivas de usuários admin"],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "user": {
+                    "value": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - A rota pode ser acessada apenas por usuários administradores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "Insufficient permission"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Rota responsável por logar um usuário ao sistema",
+        "tags": ["Rotas sem autenticação"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/login" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/loginResponse"
+                },
+                "examples": {
+                  "loginResponse": {
+                    "value": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im90YXZpb0BtYWlsLmNvbSIsImFkbWluIjpmYWxzZSwiaWF0IjoxNjk5MzgwNzAyLCJleHAiOjE2OTk0NjcxMDIsInN1YiI6IjUifQ.uKWk2OXiU9_EGq2F3ZacbxsW4GWbadVJ2Zqyr7M9B_Q"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - E-mail ou senha invalidos",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "LoginResponse": {
+                    "value": {
+                      "message": "Invalid credentials"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{}]
+      }
+    },
+    "/categories": {
+      "post": {
+        "description": "Rota responsável por cadastrar categorias para os imóveis",
+        "tags": ["Rotas exclusivas de usuários admin"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/categoryResponse"
+                },
+                "examples": {
+                  "category": {
+                    "value": {
+                      "name": "Apartamento",
+                      "id": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Cada campo deve respeitar o seu tipo de acordo com o seu schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": {
+                        "name": ["Expected string, received number"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - A rota pode ser acessada apenas por usuários administradores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "Insufficient permission"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Não podem ser cadastrados categorias com o mesmo nome",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "conflictError": {
+                    "value": {
+                      "message": "Category already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "Rota responsável por buscar todas as categorias cadastradas",
+        "tags": ["Rotas sem autenticação"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "name": "Apartamento"
+                      },
+                      {
+                        "id": 2,
+                        "name": "Casa"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{}]
+      }
+    },
+    "/categories/:categoryId/realEstate": {
+      "get": {
+        "description": "Rota responsável por listar todos os imóveis que pertencem a uma categoria",
+        "tags": ["Rotas sem autenticação"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "id": 1,
+                      "name": "Apartamento",
+                      "realEstate": [
+                        {
+                          "id": 5,
+                          "sold": false,
+                          "value": "2000.00",
+                          "size": 15,
+                          "createdAt": "2023-10-30",
+                          "updatedAt": "2023-10-30"
+                        },
+                        {
+                          "id": 7,
+                          "sold": false,
+                          "value": "3000.00",
+                          "size": 35,
+                          "createdAt": "2023-10-30",
+                          "updatedAt": "2023-10-30"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{}]
+      }
+    },
+
+    "/realEstate": {
+      "post": {
+        "description": "Rota responsável por cadastrar imóveis.",
+        "tags": ["Rotas exclusivas de usuários admin"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createRealEstate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/userResponse"
+                },
+                "examples": {
+                  "category": {
+                    "value": {
+                      "value": "6000.00",
+                      "size": 20,
+                      "address": {
+                        "street": "Avenida Brasil",
+                        "zipCode": "35476786",
+                        "number": 523,
+                        "city": "Belo Horizonte",
+                        "state": "MG",
+                        "id": 7
+                      },
+                      "categoryId": 4,
+                      "category": {
+                        "id": 4,
+                        "name": "Fazenda"
+                      },
+                      "id": 10,
+                      "sold": false,
+                      "createdAt": "2023-10-31",
+                      "updatedAt": "2023-10-31"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Cada campo deve respeitar o seu tipo de acordo com o seu schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": {
+                        "name": ["Expected string, received number"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - A rota pode ser acessada apenas por usuários administradores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "Insufficient permission"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Não podem ser cadastrados dois imóveis com o mesmo endereço",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "conflictError": {
+                    "value": {
+                      "message": "Address already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "Rota responsável por listar todos os imóveis.<br><br>É possível ordenar os imóveis pelo id, value ou size, de forma ascendente ou descendente.<br><br>Exemplo: http://localhost:3000/realEstate?page=1&perPage=5&sort=value&order=asc",
+        "tags": ["Rotas sem autenticação"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "prevPage": null,
+                      "nextPage": "http://localhost:3000/realEstate?page=2&perPage=5",
+                      "data": [
+                        {
+                          "id": 10,
+                          "sold": false,
+                          "value": "6000.00",
+                          "size": 20,
+                          "createdAt": "2023-10-31",
+                          "updatedAt": "2023-10-31"
+                        },
+                        {
+                          "id": 9,
+                          "sold": false,
+                          "value": "5000.00",
+                          "size": 15,
+                          "createdAt": "2023-10-31",
+                          "updatedAt": "2023-10-31"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{}]
+      }
+    },
+    "/schedules": {
+      "post": {
+        "description": "Rota responsável pelo agendamento de uma visita a um imóvel",
+        "tags": ["Rotas com autenticação"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createSchedule"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/scheduleResponse"
+                },
+                "examples": {
+                  "schedule": {
+                    "value": {
+                      "message": "Schedule created"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Cada campo deve respeitar o seu tipo de acordo com o seu schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": {
+                        "date": ["Expected string, received number"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Imóvel não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "RealEstate not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Not Acceptable - Já tem uma visita marcada para esse imóvel, nessa mesma data e horário",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "conflictError": {
+                    "value": {
+                      "message": "Schedule to this real estate at this date and time already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Você já tem uma visita marcada para outro imóvel nessa mesma data e hora",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "conflictError": {
+                    "value": {
+                      "message": "You have booked an appointment to another place at this same date and time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules/realEstate/:realEstateId": {
+      "get": {
+        "description": "Rota responsável por  listar todos os agendamentos de um imóvel",
+        "tags": ["Rotas exclusivas de usuários admin"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "id": 4,
+                      "sold": false,
+                      "value": "1000.00",
+                      "size": 30,
+                      "createdAt": "2023-10-30",
+                      "updatedAt": "2023-10-30",
+                      "schedules": [
+                        {
+                          "id": 1,
+                          "date": "2023-11-01",
+                          "hour": "08:00:00",
+                          "user": {
+                            "id": 1,
+                            "name": "Filipe",
+                            "email": "filipe@mail.com",
+                            "admin": true,
+                            "password": "$2a$10$dQ/TkdkJDOQqWnmUeyliuOzQ8r5mNCVVcLXitkIquVWNSM8HeLyry",
+                            "createdAt": "2023-10-28",
+                            "updatedAt": "2023-10-31",
+                            "deletedAt": null
+                          }
+                        },
+                        {
+                          "id": 2,
+                          "date": "2023-11-04",
+                          "hour": "09:00:00",
+                          "user": {
+                            "id": 2,
+                            "name": "Nathali",
+                            "email": "nathalia@mail.com",
+                            "admin": false,
+                            "password": "$2a$10$dQ/TkdkJDOQqWnmUeyliuOzQ8r5mNCVVcLXitkIquVWNSM8HeLyry",
+                            "createdAt": "2023-10-28",
+                            "updatedAt": "2023-10-31",
+                            "deletedAt": null
+                          }
+                        }
+                      ],
+                      "address": {
+                        "id": 1,
+                        "street": "Rua rio madeira",
+                        "zipCode": "32280140",
+                        "number": 202,
+                        "city": "Contagem",
+                        "state": "MG"
+                      },
+                      "category": {
+                        "id": 2,
+                        "name": "Casa"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - A rota não pode ser acessada sem ter feito o login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "jwt must be provided"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Somente usuários administradores podem ter acesso a esses dados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "message": "Insufficient permission"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "createUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "admin": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Se não passar o admin ele vai ser false por padrão"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "userResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "admin": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "deletedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "getAllUsers": {
+        "type": "object",
+        "properties": {
+          "prevPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "nextPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "admin": {
+                  "type": "boolean"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                },
+                "deletedAt": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "count": {
+            "type": "number"
+          }
+        }
+      },
+      "updateUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "loginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "createCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "categoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "getAllCategories": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "getAllRealEstatesbyCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "realEstate": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "sold": {
+                  "type": "boolean"
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                },
+                "size": {
+                  "type": "number"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "createRealEstate": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "size": {
+            "type": "number"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "zipCode": {
+                "type": "string"
+              },
+              "number": {
+                "type": "number"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
+          },
+          "categoryId": {
+            "type": "number"
+          }
+        }
+      },
+      "realEstateResponse": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "size": {
+            "type": "number"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "zipCode": {
+                "type": "string"
+              },
+              "number": {
+                "type": "number"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
+          },
+          "categoryId": {
+            "type": "number"
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "id": {
+            "type": "number"
+          },
+          "sold": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "getAllRealEstates": {
+        "type": "object",
+        "properties": {
+          "prevPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "nextPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "sold": {
+                  "type": "boolean"
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                },
+                "size": {
+                  "type": "number"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "count": {
+            "type": "number"
+          }
+        }
+      },
+      "createSchedule": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "hour": {
+            "type": "string"
+          },
+          "realEstateId": {
+            "type": "number"
+          }
+        }
+      },
+      "scheduleResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "getAllSchedulesByRealEstate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "sold": {
+            "type": "boolean"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "size": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "schedules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "hour": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "admin": {
+                      "type": "boolean"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "street": {
+                "type": "string"
+              },
+              "zipCode": {
+                "type": "string"
+              },
+              "number": {
+                "type": "number"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}
