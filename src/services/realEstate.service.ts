@@ -18,15 +18,16 @@ export const createRealEstateService = async (
     throw new AppError("Category no found", 404);
   }
 
-  const address: Address = await addressRepo.save(body.address);
+  const createAddress: Address = addressRepo.create(body.address);
+  const address: Address = await addressRepo.save(createAddress);
 
-  const realEstate: RealEstate = await realEstateRepo.save({
+  const createRealEstate: RealEstate = realEstateRepo.create({
     ...body,
     address: address,
     category: category,
   });
 
-  return realEstate;
+  return await realEstateRepo.save(createRealEstate);
 };
 
 export const readAllRealEstateService = async ({

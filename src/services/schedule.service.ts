@@ -27,13 +27,13 @@ export const createScheduleService = async (
 
   const user: User | null = await userRepo.findOneBy({ id: userId });
 
-  const schedule: Schedule = await scheduleRepo.save({
+  const createSchedule: Schedule = scheduleRepo.create({
     ...body,
     realEstate: realEstate!,
     user: user!,
   });
 
-  return schedule;
+  return await scheduleRepo.save(createSchedule);
 };
 
 export const readAllSchedulesByRealEstateService = async (

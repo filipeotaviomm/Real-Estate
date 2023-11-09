@@ -9,7 +9,8 @@ import { categoryRepo } from "../repositories";
 export const createCategoryService = async (
   body: TCategoryCreate
 ): Promise<Category> => {
-  return await categoryRepo.save(body);
+  const createCategory: Category = categoryRepo.create(body);
+  return await categoryRepo.save(createCategory);
 };
 
 export const readAllCategoriesService = async (): Promise<TCategoriesRead> => {

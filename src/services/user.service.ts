@@ -14,7 +14,8 @@ import { userReadSchema, usersReadSchema } from "../schemas/users.schema";
 export const createUserService = async (
   body: TUserCreate
 ): Promise<TUserRead> => {
-  const user: User = await userRepo.save(body);
+  const createUser: User = userRepo.create(body);
+  const user: User = await userRepo.save(createUser);
 
   return userReadSchema.parse(user);
 };
@@ -47,9 +48,9 @@ export const updateUserService = async (
 ): Promise<TUserRead> => {
   const updatedUser: User = userRepo.create({ ...user, ...body });
 
-  await userRepo.save(updatedUser);
+  const userUpdt = await userRepo.save(updatedUser);
 
-  return userReadSchema.parse(updatedUser);
+  return userReadSchema.parse(userUpdt);
 };
 
 export const deleteUserService = async (user: User): Promise<void> => {
