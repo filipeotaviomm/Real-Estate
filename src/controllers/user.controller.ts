@@ -5,7 +5,7 @@ import {
   getAllUsersService,
   updateUserService,
 } from "../services/user.service";
-import { TUserRead, TUsersRead } from "../interfaces/users.interface";
+import { TUserRead } from "../interfaces/users.interface";
 import { TAllUsers } from "../interfaces/pagination.interface";
 
 export const createUserController = async (

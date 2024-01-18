@@ -1,0 +1,29 @@
+services:
+  postgre:
+    image: postgres:13.13
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+  node:
+    image: filipeotaviomm/node:v1
+    depends_on:
+      - postgre
+    # se o build estiver comentado, vai ser usado a image da linha 11
+    # build ñ comentado, vai fazer o build segundo as especeficiações dentro dele e não usa a imagem da linha 11, poderia até comenta-la
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${DB_NAME}
+
+networks:
+  node_net:
+    driver: bridge
